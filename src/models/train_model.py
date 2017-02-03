@@ -12,27 +12,36 @@ data_dir = '../../data/processed/'
 
 def get_unet():
     seq = Sequential()
-    seq.add(ConvLSTM2D(nb_filter=32, nb_row=3, nb_col=3,
+    seq.add(ConvLSTM2D(nb_filter=128, nb_row=3, nb_col=3,
                        input_shape=(None, 128, 128, 3),
                        border_mode='same', return_sequences=True))
     seq.add(BatchNormalization())
 
-    seq.add(ConvLSTM2D(nb_filter=32, nb_row=3, nb_col=3,
+    seq.add(ConvLSTM2D(nb_filter=128, nb_row=3, nb_col=3,
                        border_mode='same', return_sequences=True))
     seq.add(BatchNormalization())
 
-    seq.add(ConvLSTM2D(nb_filter=32, nb_row=3, nb_col=3,
+    seq.add(ConvLSTM2D(nb_filter=128, nb_row=3, nb_col=3,
                        border_mode='same', return_sequences=True))
     seq.add(BatchNormalization())
 
-    seq.add(ConvLSTM2D(nb_filter=32, nb_row=3, nb_col=3,
+    seq.add(ConvLSTM2D(nb_filter=128, nb_row=3, nb_col=3,
                        border_mode='same', return_sequences=True))
 
-    seq.add(ConvLSTM2D(nb_filter=32, nb_row=3, nb_col=3,
+    seq.add(ConvLSTM2D(nb_filter=128, nb_row=3, nb_col=3,
+                       border_mode='same', return_sequences=True))
+    seq.add(BatchNormalization())
+    seq.add(ConvLSTM2D(nb_filter=128, nb_row=3, nb_col=3,
+                       border_mode='same', return_sequences=True))
+    seq.add(BatchNormalization())
+    seq.add(ConvLSTM2D(nb_filter=128, nb_row=3, nb_col=3,
+                       border_mode='same', return_sequences=True))
+    seq.add(BatchNormalization())
+    seq.add(ConvLSTM2D(nb_filter=128, nb_row=3, nb_col=3,
                        border_mode='same', return_sequences=True))
     seq.add(BatchNormalization())
     seq.add(ConvLSTM2D(nb_filter=1, nb_row=1, nb_col=1,
-                       border_mode='same', return_sequences=True, activation='relu'))
+                       border_mode='same', return_sequences=True, activation='sigmoid'))
 
 
 
@@ -58,6 +67,6 @@ for i in y_train:
 
 model = get_unet()
 model_checkpoint = ModelCheckpoint('lstm_unet.hdf5', monitor='loss', save_best_only=True)
-model.fit(x_train,y_train, verbose=1,nb_epoch=100, callbacks=[model_checkpoint], shuffle=True)
+model.fit(x_train,y_train, verbose=1,nb_epoch=1000, callbacks=[model_checkpoint], shuffle=True)
 
 model.save('../../models/lstm')
