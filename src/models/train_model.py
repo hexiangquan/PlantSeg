@@ -57,7 +57,7 @@ for i in y_train:
 
 
 model = get_unet()
-
-model.fit(x_train,y_train, verbose=1)
+model_checkpoint = ModelCheckpoint('lstm_unet.hdf5', monitor='loss', save_best_only=True)
+model.fit(x_train,y_train, verbose=1,nb_epoch=100, callbacks=[model_checkpoint], shuffle=True)
 
 model.save('../../models/lstm')
