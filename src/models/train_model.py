@@ -12,23 +12,23 @@ data_dir = '../../data/processed/'
 
 def get_unet():
     seq = Sequential()
-    seq.add(ConvLSTM2D(nb_filter=16, nb_row=3, nb_col=3,
+    seq.add(ConvLSTM2D(nb_filter=32, nb_row=3, nb_col=3,
                        input_shape=(None, 128, 128, 3),
                        border_mode='same', return_sequences=True))
     seq.add(BatchNormalization())
 
-    seq.add(ConvLSTM2D(nb_filter=8, nb_row=3, nb_col=3,
+    seq.add(ConvLSTM2D(nb_filter=32, nb_row=3, nb_col=3,
                        border_mode='same', return_sequences=True))
     seq.add(BatchNormalization())
 
-    seq.add(ConvLSTM2D(nb_filter=4, nb_row=3, nb_col=3,
+    seq.add(ConvLSTM2D(nb_filter=32, nb_row=3, nb_col=3,
                        border_mode='same', return_sequences=True))
     seq.add(BatchNormalization())
 
-    seq.add(ConvLSTM2D(nb_filter=8, nb_row=3, nb_col=3,
+    seq.add(ConvLSTM2D(nb_filter=32, nb_row=3, nb_col=3,
                        border_mode='same', return_sequences=True))
 
-    seq.add(ConvLSTM2D(nb_filter=16, nb_row=3, nb_col=3,
+    seq.add(ConvLSTM2D(nb_filter=32, nb_row=3, nb_col=3,
                        border_mode='same', return_sequences=True))
     seq.add(BatchNormalization())
     seq.add(ConvLSTM2D(nb_filter=1, nb_row=1, nb_col=1,
