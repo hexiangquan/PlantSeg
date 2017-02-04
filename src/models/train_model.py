@@ -1,6 +1,6 @@
 from keras.models import Model, Sequential
 from keras.layers import Input, merge, Convolution2D, MaxPooling2D, UpSampling2D, Activation, BatchNormalization, \
-    ConvLSTM2D
+    ConvLSTM2D, TimeDistributed
 from keras.optimizers import Adam
 from keras.callbacks import ModelCheckpoint, LearningRateScheduler
 from keras import backend as K
@@ -12,45 +12,60 @@ data_dir = '../../data/processed/'
 
 def get_unet():
     seq = Sequential()
-    seq.add(ConvLSTM2D(nb_filter=64, nb_row=3, nb_col=3,
+    seq.add(ConvLSTM2D(nb_filter=32, nb_row=3, nb_col=3,
                        input_shape=(None, 128, 128, 3),
                        border_mode='same', return_sequences=True))
     seq.add(BatchNormalization())
     seq.add(Activation('relu'))
 
+    seq.add(TimeDistributed(MaxPooling2D(pool_size=(2,2))))
     seq.add(ConvLSTM2D(nb_filter=64, nb_row=3, nb_col=3,
                        border_mode='same', return_sequences=True))
     seq.add(BatchNormalization())
-
     seq.add(Activation('relu'))
+    seq.add(TimeDistributed(MaxPooling2D(pool_size=(2,2))))
+
+    seq.add(ConvLSTM2D(nb_filter=128, nb_row=3, nb_col=3,
+                       border_mode='same', return_sequences=True))
+    seq.add(BatchNormalization())
+    seq.add(Activation('relu'))
+    seq.add(TimeDistributed(MaxPooling2D(pool_size=(2,2))))
+
+    seq.add(ConvLSTM2D(nb_filter=256, nb_row=3, nb_col=3,
+                       border_mode='same', return_sequences=True))
+    seq.add(Activation('relu'))
+    seq.add(TimeDistributed(MaxPooling2D(pool_size=(2,2))))
+
+    seq.add(ConvLSTM2D(nb_filter=512, nb_row=3, nb_col=3,
+                       border_mode='same', return_sequences=True))
+    seq.add(BatchNormalization())
+    seq.add(Activation('relu'))
+
+    seq.add(TimeDistributed(UpSampling2D(size=(2, 2))))
+    seq.add(ConvLSTM2D(nb_filter=256, nb_row=3, nb_col=3,
+                       border_mode='same', return_sequences=True))
+    seq.add(BatchNormalization())
+    seq.add(Activation('relu'))
+
+    seq.add(TimeDistributed(UpSampling2D(size=(2, 2))))
+    seq.add(ConvLSTM2D(nb_filter=128, nb_row=3, nb_col=3,
+                       border_mode='same', return_sequences=True))
+    seq.add(BatchNormalization())
+    seq.add(Activation('relu'))
+
+    seq.add(TimeDistributed(UpSampling2D(size=(2, 2))))
     seq.add(ConvLSTM2D(nb_filter=64, nb_row=3, nb_col=3,
                        border_mode='same', return_sequences=True))
     seq.add(BatchNormalization())
-
     seq.add(Activation('relu'))
-    seq.add(ConvLSTM2D(nb_filter=64, nb_row=3, nb_col=3,
-                       border_mode='same', return_sequences=True))
 
-    seq.add(ConvLSTM2D(nb_filter=64, nb_row=3, nb_col=3,
+    seq.add(TimeDistributed(UpSampling2D(size=(2, 2))))
+    seq.add(ConvLSTM2D(nb_filter=32, nb_row=3, nb_col=3,
                        border_mode='same', return_sequences=True))
     seq.add(BatchNormalization())
-
     seq.add(Activation('relu'))
-    seq.add(ConvLSTM2D(nb_filter=64, nb_row=3, nb_col=3,
-                       border_mode='same', return_sequences=True))
-    seq.add(BatchNormalization())
 
-    seq.add(Activation('relu'))
-    seq.add(ConvLSTM2D(nb_filter=64, nb_row=3, nb_col=3,
-                       border_mode='same', return_sequences=True))
-    seq.add(BatchNormalization())
 
-    seq.add(Activation('relu'))
-    seq.add(ConvLSTM2D(nb_filter=64, nb_row=3, nb_col=3,
-                       border_mode='same', return_sequences=True))
-    seq.add(BatchNormalization())
-
-    seq.add(Activation('relu'))
     seq.add(ConvLSTM2D(nb_filter=1, nb_row=1, nb_col=1,
                        border_mode='same', return_sequences=True, activation='sigmoid'))
 
