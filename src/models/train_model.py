@@ -14,22 +14,29 @@ def get_unet():
 
     kernels = 64
     seq = Sequential()
-    seq.add(ConvLSTM2D(nb_filter=64, nb_row=3, nb_col=3,
+    firstlayer = ConvLSTM2D(nb_filter=64, nb_row=3, nb_col=3,
                        input_shape=(None, 128, 128, 3),
-                       border_mode='same', return_sequences=True))
+                       border_mode='same', return_sequences=True, activation='relu')
+    seq.add(firstlayer)
+    seq.add(BatchNormalization())
+    seq.add(TimeDistributed(MaxPooling2D(pool_size=(2,2))))
+
+    seq.add(ConvLSTM2D(nb_filter=128, nb_row=3, nb_col=3,
+                       border_mode='same', return_sequences=True, activation='relu'))
+    seq.add(BatchNormalization())
+    seq.add(TimeDistributed(MaxPooling2D(pool_size=(2,2))))
+
+
+    seq.add(ConvLSTM2D(nb_filter=256, nb_row=3, nb_col=3,
+                       border_mode='same', return_sequences=True, activation='relu'))
     seq.add(BatchNormalization())
 
-    seq.add(ConvLSTM2D(nb_filter=64, nb_row=3, nb_col=3,
-                       border_mode='same', return_sequences=True))
+    seq.add(TimeDistributed(UpSampling2D(size=(2,2))))
+    seq.add(ConvLSTM2D(nb_filter=128, nb_row=3, nb_col=3,
+                       border_mode='same', return_sequences=True, activation='relu'))
     seq.add(BatchNormalization())
+    seq.add(TimeDistributed(UpSampling2D(size=(2,2))))
 
-    seq.add(ConvLSTM2D(nb_filter=64, nb_row=3, nb_col=3,
-                       border_mode='same', return_sequences=True))
-    seq.add(BatchNormalization())
-
-    seq.add(ConvLSTM2D(nb_filter=64, nb_row=3, nb_col=3,
-                       border_mode='same', return_sequences=True))
-    seq.add(BatchNormalization())
 
     seq.add(Convolution3D(nb_filter=1, kernel_dim1=1, kernel_dim2=3,
                           kernel_dim3=3, activation='sigmoid',
