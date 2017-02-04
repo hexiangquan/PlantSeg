@@ -1,6 +1,6 @@
 from keras.models import Model, Sequential
 from keras.layers import Input, merge, Convolution2D, MaxPooling2D, UpSampling2D, Activation, BatchNormalization, \
-    ConvLSTM2D, TimeDistributed
+    ConvLSTM2D, TimeDistributed, Flatten, LSTM, Reshape, Convolution3D
 from keras.optimizers import Adam
 from keras.callbacks import ModelCheckpoint, LearningRateScheduler
 from keras import backend as K
@@ -11,63 +11,31 @@ from scipy import misc
 data_dir = '../../data/processed/'
 
 def get_unet():
+
+    kernels = 64
     seq = Sequential()
-    seq.add(ConvLSTM2D(nb_filter=32, nb_row=3, nb_col=3,
+    seq.add(ConvLSTM2D(nb_filter=64, nb_row=3, nb_col=3,
                        input_shape=(None, 128, 128, 3),
                        border_mode='same', return_sequences=True))
     seq.add(BatchNormalization())
-    seq.add(Activation('relu'))
 
-    seq.add(TimeDistributed(MaxPooling2D(pool_size=(2,2))))
     seq.add(ConvLSTM2D(nb_filter=64, nb_row=3, nb_col=3,
                        border_mode='same', return_sequences=True))
     seq.add(BatchNormalization())
-    seq.add(Activation('relu'))
-    seq.add(TimeDistributed(MaxPooling2D(pool_size=(2,2))))
 
-    seq.add(ConvLSTM2D(nb_filter=128, nb_row=3, nb_col=3,
-                       border_mode='same', return_sequences=True))
-    seq.add(BatchNormalization())
-    seq.add(Activation('relu'))
-    seq.add(TimeDistributed(MaxPooling2D(pool_size=(2,2))))
-
-    seq.add(ConvLSTM2D(nb_filter=256, nb_row=3, nb_col=3,
-                       border_mode='same', return_sequences=True))
-    seq.add(Activation('relu'))
-    seq.add(TimeDistributed(MaxPooling2D(pool_size=(2,2))))
-
-    seq.add(ConvLSTM2D(nb_filter=512, nb_row=3, nb_col=3,
-                       border_mode='same', return_sequences=True))
-    seq.add(BatchNormalization())
-    seq.add(Activation('relu'))
-
-    seq.add(TimeDistributed(UpSampling2D(size=(2, 2))))
-    seq.add(ConvLSTM2D(nb_filter=256, nb_row=3, nb_col=3,
-                       border_mode='same', return_sequences=True))
-    seq.add(BatchNormalization())
-    seq.add(Activation('relu'))
-
-    seq.add(TimeDistributed(UpSampling2D(size=(2, 2))))
-    seq.add(ConvLSTM2D(nb_filter=128, nb_row=3, nb_col=3,
-                       border_mode='same', return_sequences=True))
-    seq.add(BatchNormalization())
-    seq.add(Activation('relu'))
-
-    seq.add(TimeDistributed(UpSampling2D(size=(2, 2))))
     seq.add(ConvLSTM2D(nb_filter=64, nb_row=3, nb_col=3,
                        border_mode='same', return_sequences=True))
     seq.add(BatchNormalization())
-    seq.add(Activation('relu'))
 
-    seq.add(TimeDistributed(UpSampling2D(size=(2, 2))))
-    seq.add(ConvLSTM2D(nb_filter=32, nb_row=3, nb_col=3,
+    seq.add(ConvLSTM2D(nb_filter=64, nb_row=3, nb_col=3,
                        border_mode='same', return_sequences=True))
     seq.add(BatchNormalization())
-    seq.add(Activation('relu'))
 
+    seq.add(Convolution3D(nb_filter=1, kernel_dim1=1, kernel_dim2=3,
+                          kernel_dim3=3, activation='sigmoid',
+                          border_mode='same', dim_ordering='tf'))
 
-    seq.add(ConvLSTM2D(nb_filter=1, nb_row=1, nb_col=1,
-                       border_mode='same', return_sequences=True, activation='sigmoid'))
+    print(seq.output_shape)
 
 
 
@@ -87,8 +55,6 @@ def get_data():
 
 x_train, y_train = get_data()
 
-for i in y_train:
-    print(i.shape)
 
 
 model = get_unet()
