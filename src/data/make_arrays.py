@@ -19,7 +19,7 @@ def get_data():
 
 
 
-
+    max_sum = 0
 
     print(y_train[0].shape)
 
@@ -29,8 +29,9 @@ def get_data():
         sums = [sum(color) for color in colors]
         sums.remove(0)
 
-        sequence = np.zeros((15, 128,128,1))
-
+        sequence = np.zeros((13, 128,128,1))
+        if(len(sums) > max_sum):
+            max_sum = len(sums)
         temp_sums = np.sum(temp_img, axis=2)
         for j,i in enumerate(sums):
             inds = temp_sums == i
@@ -46,6 +47,8 @@ def get_data():
 
         y_seqs.append(sequence)
 
+
+    print "Max Sum:",max_sum
     return x_resize,y_seqs
 
 
