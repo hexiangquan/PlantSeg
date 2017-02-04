@@ -60,12 +60,14 @@ def get_data():
 
     return x_train,y_train
 
-x_train, y_train = get_data()
+
+if __name__ == '__main__':
+    x_train, y_train = get_data()
 
 
 
-model = get_unet()
-model_checkpoint = ModelCheckpoint('lstm_unet.hdf5', monitor='loss', save_best_only=True)
-model.fit(x_train,y_train, batch_size=16, verbose=1,nb_epoch=1000, callbacks=[model_checkpoint], shuffle=True)
+    model = get_unet()
+    model_checkpoint = ModelCheckpoint('lstm_unet.hdf5', monitor='loss', save_best_only=True)
+    model.fit(x_train,y_train, batch_size=16, verbose=1,nb_epoch=1000, callbacks=[model_checkpoint], shuffle=True)
 
-model.save('../../models/lstm')
+    model.save('../../models/lstm')
