@@ -47,9 +47,8 @@ def get_unet():
     seq.add(BatchNormalization())
     seq.add(Activation('relu'))
 
-    seq.add(Convolution3D(nb_filter=1, kernel_dim1=3, kernel_dim2=3,
-                          kernel_dim3=1, activation='sigmoid',
-                          border_mode='same', dim_ordering='tf'))
+    seq.add(TimeDistributed(Convolution2D(nb_filter=13, nb_col=1, nb_row=1, activation='sigmoid',
+                          border_mode='same', dim_ordering='tf')))
 
     print(seq.output_shape)
 
